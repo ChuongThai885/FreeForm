@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { addDoc, collection } from "@firebase/firestore";
 import { fireStore } from "./firebase.config";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 
 export const MainLayout = () => {
   const [message, SetMessage] = useState("");
-
   const ref = collection(fireStore, "messages");
+  const [messages] = useCollectionData(ref);
 
   const handleSave = async (event: any) => {
     event.preventDefault();
-    console.log({ event });
     const data = { message };
     try {
       console.log({ ref });
@@ -17,7 +17,7 @@ export const MainLayout = () => {
       addDoc(ref, data);
       SetMessage("");
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -30,6 +30,11 @@ export const MainLayout = () => {
         />
         <button type="submit">Save</button>
       </form>
+      <ul>
+        {messages?.map((m, i) => (
+          <li key={i}>{m.message}</li>
+        ))}
+      </ul>
     </div>
   );
 };
